@@ -169,7 +169,7 @@ controls.minDistance = 1.0; controls.maxDistance = 900;
 // Bloom
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.9, 0.4, 0.15);
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.55, 0.3, 0.85);
 composer.addPass(bloomPass);
 
 scene.add(new THREE.AmbientLight(0x334466, 0.5));
@@ -474,7 +474,20 @@ const TOUR = [
 ];
 let tourIndex=0, tourActive=false, tourTimer=null;
 const synth = window.speechSynthesis;
-function speak(text){ if(!synth) return; synth.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=0.95; u.pitch=1.0; u.volume=0.9; synth.speak(u); }
+function pickVoice(){
+  const voices = synth.getVoices();
+  if(!voices.length) return null;
+  const preferred = ['Google US English','Google UK English Female','Microsoft Aria','Microsoft Jenny','Microsoft Guy','Samantha','Daniel','Karen','Moira','Tessa','Fiona'];
+  for(const name of preferred){ const v=voices.find(v=>v.name===name); if(v) return v; }
+  // fallback: any English voice that isn't the default robotic one
+  const en = voices.filter(v=>/^en/i.test(v.lang));
+  const natural = en.find(v=>/natural|neural|premium|enhanced/i.test(v.name));
+  if(natural) return natural;
+  return en[0] || voices[0];
+}
+function speak(text){ if(!synth) return; synth.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=0.92; u.pitch=1.0; u.volume=0.95; const v=pickVoice(); if(v) u.voice=v; synth.speak(u); }
+// voices load async in some browsers
+if(synth && synth.onvoiceschanged!==undefined){ synth.onvoiceschanged = ()=>{}; }
 function showSubtitle(text){ const el=document.getElementById('subtitle'); el.textContent=text; el.classList.add('visible'); }
 function hideSubtitle(){ document.getElementById('subtitle').classList.remove('visible'); }
 function tourGo(i){
