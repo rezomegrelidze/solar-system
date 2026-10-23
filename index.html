@@ -192,7 +192,8 @@ const TEX_BASE='https://cdn.jsdelivr.net/gh/jeromeetienne/threex.planets@master/
 const texLoader=new THREE.TextureLoader(); texLoader.setCrossOrigin('anonymous');
 let texDone=0, texTotal=0;
 const texStatus=document.getElementById('tex-status');
-function trackDone(){ texDone++; texStatus.textContent=`textures ${texDone}/${texTotal}`; if(texDone>=texTotal) setTimeout(()=>{ document.getElementById('loading').style.opacity='0'; setTimeout(()=>document.getElementById('loading').remove(),500); },400); }
+function trackDone(){ texDone++; texStatus.textContent=`textures ${texDone}/${texTotal}`; if(texDone>=texTotal) setTimeout(()=>{ const L=document.getElementById('loading'); if(L){ L.style.opacity='0'; setTimeout(()=>L.remove(),500);} },400); }
+setTimeout(()=>{ const L=document.getElementById('loading'); if(L){ L.style.opacity='0'; setTimeout(()=>L.remove(),500);} }, 9000);
 function swapMap(mat,key,file,srgb=true){ if(!file) return; texTotal++; texLoader.load(TEX_BASE+file, t=>{ if(srgb) t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=4; mat[key]=t; mat.needsUpdate=true; trackDone(); }, undefined, ()=>trackDone()); }
 function fallbackTexture(base, earth=false){ const c=document.createElement('canvas'); c.width=256; c.height=128; const x=c.getContext('2d'); const col=new THREE.Color(base); x.fillStyle=`#${col.getHexString()}`; x.fillRect(0,0,256,128);
   for(let i=0;i<60;i++){const y=Math.random()*128,h=2+Math.random()*8; x.fillStyle=`rgba(0,0,0,${Math.random()*0.14})`; x.fillRect(0,y,256,h); x.fillStyle=`rgba(255,255,255,${Math.random()*0.10})`; x.fillRect(0,y+h,256,1);}
@@ -220,7 +221,7 @@ const PLANETS = [
     tell:'Look for: smooth creamy-yellow ball with soft bands — featureless clouds, no surface visible.',
     day:'243 days ↺', year:'225 days', moons:0, realDiam:12104, mass:'0.815 M⊕', grav:'8.9 m/s²', temp:'465°C (hottest)', distAU:0.72, atm:'CO₂ 96%, N₂ 3.5%',
     facts:{'Orbital period':'225 Earth days','Rotation':'243 days backwards','Surface':'volcanic plains','Discovered':'known since antiquity'} },
-  { name:'Earth', color:0x3a86ff, size:0.9, dist:20, speed:1.00, rot:0.02, tilt:23.44, map:'earthmap1k.jpg', bump:'earthbump1k.jpg', spec:'earthspec1k.jpg', night:'earthlights1k.jpg', clouds:true, atmos:0x4da3ff, detailed:true,
+  { name:'Earth', color:0x3a86ff, size:0.9, dist:20, speed:1.00, rot:0.02, tilt:23.44, map:'earthmap1k.jpg', bump:'earthbump1k.jpg', spec:'earthspec1k.jpg', clouds:true, atmos:0x4da3ff, detailed:true,
     desc:'Our home — the only known world with life. Liquid-water oceans, oxygen-rich air, one large Moon. 23.4° tilt gives seasons.',
     tell:'Look for: the ONLY blue planet — blue oceans, green/brown continents, white swirling clouds + ice caps.',
     day:'24 hrs', year:'365.25 days', moons:1, realDiam:12742, mass:'1 M⊕', grav:'9.8 m/s²', temp:'-88 to 58°C', distAU:1.00, atm:'N₂ 78%, O₂ 21%',
@@ -256,7 +257,7 @@ const PLANETS = [
       { name:'Enceladus', size:0.20, orbit:7.0, speed:1.1, color:0xeaf4ff, desc:'Brightest moon — icy geysers spray an ocean into space (Cassini sampled it).', realDiam:504, day:'1.4 days', facts:{'Orbit':'1.37 days','Geysers':'south pole'} },
       { name:'Rhea', size:0.26, orbit:7.6, speed:0.9, color:0xb8b4ac, desc:'Heavily cratered ice ball, Saturn\'s second-largest moon.', realDiam:1527, day:'4.5 days', facts:{'Orbit':'4.52 days','Surface':'cratered ice'} },
       { name:'Mimas', size:0.16, orbit:6.6, speed:1.3, color:0xa8a8a8, desc:'The "Death Star" moon — giant Herschel crater spans 1/3 of its face.', realDiam:396, day:'0.9 days', facts:{'Orbit':'0.94 days','Crater':'Herschel, 130 km wide'} } ] },
-  { name:'Uranus', color:0x7de3e8, size:1.7, dist:51, speed:0.012, rot:0.03, tilt:97.77, map:'uranusmap.jpg', rings:'uranusringcolor.jpg', ringFaint:true, atmos:0x7de3e8,
+  { name:'Uranus', color:0x7de3e8, size:1.7, dist:51, speed:0.012, rot:0.03, tilt:97.77, map:'uranusmap.jpg', rings:'uranusringcolour.jpg', ringFaint:true, atmos:0x7de3e8,
     desc:'Ice giant tipped on its side (98°) — rolls around the Sun. Coldest atmosphere at −224°C. Faint vertical rings.',
     tell:'Look for: pale mint-cyan smooth ball, almost featureless, with a thin edge-on ring.',
     day:'17.2 hrs ↺', year:'84 yrs', moons:28, realDiam:50724, mass:'14.5 M⊕', grav:'8.7 m/s²', temp:'-224°C (coldest)', distAU:19.2, atm:'H₂ 83%, He 15%',
@@ -302,7 +303,8 @@ PLANETS.forEach(p=>{
   swapMap(mat,'map',p.map);
   if(p.bump) swapMap(mat,'bumpMap',p.bump,false);
   if(p.spec) swapMap(mat,'specularMap',p.spec,false);
-  if(p.night){ texTotal++; texLoader.load(TEX_BASE+p.night, t=>{ t.colorSpace=THREE.SRGBColorSpace; mat.emissive=new THREE.Color(0xffcc66); mat.emissiveMap=t; mat.emissiveIntensity=0.9; mat.needsUpdate=true; trackDone(); }, undefined, ()=>trackDone()); }
+  // night lights removed (no compatible texture in CDN)
+  if(false && p.night){ texTotal++; }
   if(p.clouds){ const cm=new THREE.MeshPhongMaterial({map:fallbackTexture(0xffffff),transparent:true,opacity:0.75,depthWrite:false}); swapMap(cm,'map','earthcloudmap.jpg'); texTotal++; texLoader.load(TEX_BASE+'earthcloudmaptrans.jpg', t=>{ cm.alphaMap=t; cm.transparent=true; cm.needsUpdate=true; trackDone(); }, undefined, ()=>trackDone()); const clouds=new THREE.Mesh(new THREE.SphereGeometry(p.size*1.025,48,48), cm); clouds.userData.isClouds=true; mesh.add(clouds); cloudsList.push(clouds); p._clouds=clouds; }
   if(p.atmos){ mesh.add(atmosphereMesh(p.size, p.atmos, p.name==='Earth'?2.0:2.4, p.name==='Earth'?1.22:1.15)); }
   if(p.rings){ const inner=p.size*1.35, outer=p.size*(p.ringFaint?2.0:2.35); const rg=new THREE.RingGeometry(inner,outer,96,1); fixRingUVs(rg,inner,outer); const rm=new THREE.MeshBasicMaterial({map:fallbackTexture(0xcbb98a), side:THREE.DoubleSide, transparent:true, opacity:p.ringFaint?0.45:0.95}); texTotal++; texLoader.load(TEX_BASE+p.rings, t=>{ t.colorSpace=THREE.SRGBColorSpace; rm.map=t; rm.needsUpdate=true; trackDone(); }, undefined, ()=>trackDone()); const rmMesh=new THREE.Mesh(rg,rm); rmMesh.rotation.x=Math.PI/2-(p.name==='Uranus'?1.2:0.35); mesh.add(rmMesh); }
