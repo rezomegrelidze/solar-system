@@ -306,7 +306,7 @@ PLANETS.forEach(p=>{
   // night lights removed (no compatible texture in CDN)
   if(false && p.night){ texTotal++; }
   if(p.clouds){ const cm=new THREE.MeshPhongMaterial({map:fallbackTexture(0xffffff),transparent:true,opacity:0.75,depthWrite:false}); swapMap(cm,'map','earthcloudmap.jpg'); texTotal++; texLoader.load(TEX_BASE+'earthcloudmaptrans.jpg', t=>{ cm.alphaMap=t; cm.transparent=true; cm.needsUpdate=true; trackDone(); }, undefined, ()=>trackDone()); const clouds=new THREE.Mesh(new THREE.SphereGeometry(p.size*1.025,48,48), cm); clouds.userData.isClouds=true; mesh.add(clouds); cloudsList.push(clouds); p._clouds=clouds; }
-  if(p.atmos){ mesh.add(atmosphereMesh(p.size, p.atmos, p.name==='Earth'?2.0:2.4, p.name==='Earth'?1.22:1.15)); }
+  // atmosphere rim glow removed per user request (only sun glows)
   if(p.rings){ const inner=p.size*1.35, outer=p.size*(p.ringFaint?2.0:2.35); const rg=new THREE.RingGeometry(inner,outer,96,1); fixRingUVs(rg,inner,outer); const rm=new THREE.MeshBasicMaterial({map:fallbackTexture(0xcbb98a), side:THREE.DoubleSide, transparent:true, opacity:p.ringFaint?0.45:0.95}); texTotal++; texLoader.load(TEX_BASE+p.rings, t=>{ t.colorSpace=THREE.SRGBColorSpace; rm.map=t; rm.needsUpdate=true; trackDone(); }, undefined, ()=>trackDone()); const rmMesh=new THREE.Mesh(rg,rm); rmMesh.rotation.x=Math.PI/2-(p.name==='Uranus'?1.2:0.35); mesh.add(rmMesh); }
   // moons
   (p.moonDefs||[]).forEach(m=>{
