@@ -478,15 +478,17 @@ const synth = window.speechSynthesis;
 function pickVoice(){
   const voices = synth.getVoices();
   if(!voices.length) return null;
-  const preferred = ['Google US English','Google UK English Female','Microsoft Aria','Microsoft Jenny','Microsoft Guy','Samantha','Daniel','Karen','Moira','Tessa','Fiona'];
-  for(const name of preferred){ const v=voices.find(v=>v.name===name); if(v) return v; }
-  // fallback: any English voice that isn't the default robotic one
+  const preferred = ['Google US English','Google UK English Female','Microsoft Aria Online (Natural) - English (United States)','Microsoft Jenny Online (Natural) - English (United States)','Microsoft Zira','Samantha','Karen','Moira','Tessa','Fiona','Victoria','Zira'];
+  for(const name of preferred){ const v=voices.find(v=>v.name===name || v.name.includes(name)); if(v) return v; }
   const en = voices.filter(v=>/^en/i.test(v.lang));
+  // prefer female voices
+  const female = en.find(v=>/female|woman|zira|samantha|karen|moira|tessa|fiona|victoria|jenny|aria/i.test(v.name));
+  if(female) return female;
   const natural = en.find(v=>/natural|neural|premium|enhanced/i.test(v.name));
   if(natural) return natural;
   return en[0] || voices[0];
 }
-function speak(text){ if(!synth) return; synth.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=0.92; u.pitch=1.0; u.volume=0.95; const v=pickVoice(); if(v) u.voice=v; synth.speak(u); }
+function speak(text){ if(!synth) return; synth.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=0.9; u.pitch=1.05; u.volume=0.95; const v=pickVoice(); if(v) u.voice=v; synth.speak(u); }
 // voices load async in some browsers
 if(synth && synth.onvoiceschanged!==undefined){ synth.onvoiceschanged = ()=>{}; }
 function showSubtitle(text){ const el=document.getElementById('subtitle'); el.textContent=text; el.classList.add('visible'); }
