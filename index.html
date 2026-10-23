@@ -73,7 +73,7 @@
 
   @media (max-width:720px){ #ui-panel{width:200px;padding:12px;} #info-card{width:calc(100vw-32px);top:auto;bottom:78px;right:16px;} #tour-bar{top:auto;bottom:78px;} }
 </style>
-<script type="importmap">
+<script src="https://js.puter.com/v2/"></script>
 { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
 </script>
 </head>
@@ -488,7 +488,18 @@ function pickVoice(){
   if(natural) return natural;
   return en[0] || voices[0];
 }
-function speak(text){ if(!synth) return; synth.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=0.9; u.pitch=1.05; u.volume=0.95; const v=pickVoice(); if(v) u.voice=v; synth.speak(u); }
+function speak(text){ 
+  if(window.puter && window.puter.ai && typeof window.puter.ai.txt2speech === 'function'){
+    try {
+      window.puter.ai.txt2speech(text, { provider:'openai', voice:'nova', instructions:'Speak warmly and naturally, like a friendly documentary narrator, with gentle pacing.' })
+        .then(audio=>{ window._puterAudio=audio; audio.play(); })
+        .catch(err=>{ console.warn('Puter TTS failed, falling back', err); fallbackSpeak(text); });
+      return;
+    } catch(e){ console.warn(e); }
+  }
+  fallbackSpeak(text);
+}
+function fallbackSpeak(text){ if(!synth) return; synth.cancel(); const u=new SpeechSynthesisUtterance(text); u.rate=0.9; u.pitch=1.05; u.volume=0.95; const v=pickVoice(); if(v) u.voice=v; synth.speak(u); }
 // voices load async in some browsers
 if(synth && synth.onvoiceschanged!==undefined){ synth.onvoiceschanged = ()=>{}; }
 function showSubtitle(text){ const el=document.getElementById('subtitle'); el.textContent=text; el.classList.add('visible'); }
@@ -513,7 +524,7 @@ function tourGo(i){
   document.getElementById('tour-progress').firstElementChild.style.width=((tourIndex+1)/TOUR.length*100)+'%';
 }
 function startTour(){ tourActive=true; document.getElementById('tour-bar').classList.add('visible'); tourGo(0); }
-function stopTour(){ tourActive=false; document.getElementById('tour-bar').classList.remove('visible'); hideSubtitle(); if(synth) synth.cancel(); }
+function stopTour(){ tourActive=false; document.getElementById('tour-bar').classList.remove('visible'); hideSubtitle(); if(synth) synth.cancel(); if(window._puterAudio){ try{ window._puterAudio.pause(); }catch(e){} } }
 document.getElementById('btn-tour').onclick=startTour;
 document.getElementById('guide-tour').onclick=()=>{ document.getElementById('guide').classList.remove('visible'); startTour(); };
 document.getElementById('tour-prev').onclick=()=>tourGo(tourIndex-1);
