@@ -159,7 +159,7 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.05;
+renderer.toneMappingExposure = 0.9;
 container.appendChild(renderer.domElement);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -172,8 +172,9 @@ composer.addPass(new RenderPass(scene, camera));
 const bloomPass = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.55, 0.3, 0.85);
 composer.addPass(bloomPass);
 
-scene.add(new THREE.AmbientLight(0x334466, 0.5));
-const sunLight = new THREE.PointLight(0xffffff, 2.6, 0, 0.04);
+scene.add(new THREE.AmbientLight(0x445566, 0.65));
+const sunLight = new THREE.PointLight(0xffffff, 1.6, 0, 0.2);
+scene.add(sunLight);
 scene.add(sunLight);
 
 // ---------- Starfield (colored) ----------
@@ -285,7 +286,7 @@ const sunGroup=new THREE.Group(); scene.add(sunGroup);
 const sunMat=new THREE.MeshBasicMaterial({map:fallbackTexture(0xffcc33)});
 const sunMesh=new THREE.Mesh(new THREE.SphereGeometry(8,48,48), sunMat);
 sunMesh.userData.bodyName='Sun'; sunGroup.add(sunMesh);
-sunGroup.add(glowSprite('#ffaa33',40)); sunGroup.add(glowSprite('#ff6622',24));
+sunGroup.add(glowSprite('#ffaa33',20)); sunGroup.add(glowSprite('#ff6622',12));
 swapMap(sunMat,'map','sunmap.jpg');
 
 // ---------- Build planets ----------
