@@ -553,8 +553,7 @@ animate();
 
 addEventListener('resize',()=>{ camera.aspect=innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth,innerHeight); composer.setSize(innerWidth,innerHeight); });
 
-// ---------- Mark active helper ----------
-function markActive(name){ document.querySelectorAll('#planet-list .planet-btn').forEach(b=>b.classList.toggle('active', b.dataset.name===name)); }
+// ---------- Mark active helper removed (defined above) ----------
 </script>
 </body>
 </html>
