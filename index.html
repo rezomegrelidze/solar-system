@@ -451,7 +451,7 @@ document.getElementById('tgl-orbits').onchange=e=>{ orbitLines.forEach(l=>l.visi
 document.getElementById('tgl-labels').onchange=e=>planetObjs.forEach(o=>o.label.visible=e.target.checked);
 document.getElementById('tgl-rotate').onchange=e=>allowSpin=e.target.checked;
 document.getElementById('tgl-clouds').onchange=e=>cloudsList.forEach(c=>c.visible=e.target.checked);
-document.getElementById('tgl-bloom').onchange=e=>{ bloomOn=e.target.checked; };
+// bloom toggle removed
 document.getElementById('tgl-asteroids').onchange=e=>{ asteroidsOn=e.target.checked; if(asteroidBelt) asteroidBelt.visible=e.target.checked; if(kuiperBelt) kuiperBelt.visible=e.target.checked; };
 document.getElementById('tgl-real').onchange=e=>{ realistic=e.target.checked; document.getElementById('scale-badge').textContent='Scale: '+(realistic?'realistic (tiny planets)':'readable (planets enlarged)'); };
 
