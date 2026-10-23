@@ -95,7 +95,7 @@
   <label class="toggle"><input type="checkbox" id="tgl-labels" checked /> Labels</label>
   <label class="toggle"><input type="checkbox" id="tgl-rotate" checked /> Spin</label>
   <label class="toggle"><input type="checkbox" id="tgl-clouds" checked /> Earth clouds</label>
-  <label class="toggle"><input type="checkbox" id="tgl-bloom" checked /> Bloom (glow)</label>
+<!-- bloom toggle removed -->
   <label class="toggle"><input type="checkbox" id="tgl-asteroids" checked /> Asteroid belt</label>
 </div>
 
@@ -562,7 +562,7 @@ function animate(){
     controls.maxDistance=Math.max(900, wantDist*4);
   }
   controls.update();
-  if(bloomOn) composer.render(); else renderer.render(scene,camera);
+  renderer.render(scene,camera);
 }
 animate();
 
